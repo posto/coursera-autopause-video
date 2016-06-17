@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CourseraAutopauseVideo
 // @namespace    https://github.com/posto/
-// @version      0.1
+// @version      0.2
 // @description  Autopause video on focus loss in Coursera
 // @author       Dumitru Postoronca
 // @match        https://www.coursera.org/learn/*
@@ -50,7 +50,9 @@
             return;
         }
         if (document[hidden]) {
+            // pause and rewind a bit of the video
             videoElement.pause();
+            videoElement.currentTime = Math.max(videoElement.currentTime - 5, 0);
         } else {
             videoElement.play();
         }
