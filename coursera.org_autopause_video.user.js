@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CourseraAutopauseVideo
 // @namespace    https://github.com/posto/
-// @version      0.2
+// @version      0.3
 // @description  Autopause video on focus loss in Coursera
 // @author       Dumitru Postoronca
 // @match        https://www.coursera.org/learn/*
@@ -16,6 +16,8 @@
     'use strict';
 
     window.__courseraautopause=true;
+    // if user manually paused the video before visibility loss, don't autoresume when page is visible again
+    window.__courseraautopause_already_paused = false;
 
     // add link to control this script
     document.body.insertAdjacentHTML("afterbegin", "<a href='#' id='__courseraautopausetoggler' style='position: fixed;top: 0; right: 0; z-index: 999999'>autopause [" + window.__courseraautopause + "]</a>");
@@ -51,10 +53,15 @@
         }
         if (document[hidden]) {
             // pause and rewind a bit of the video
-            videoElement.pause();
-            videoElement.currentTime = Math.max(videoElement.currentTime - 5, 0);
+            window.__courseraautopause_already_paused = videoElement.paused;
+            if (!videoElement.paused) {
+                videoElement.pause();
+                videoElement.currentTime = Math.max(videoElement.currentTime - 5, 0);
+            }
         } else {
-            videoElement.play();
+            if (!window.__courseraautopause_already_paused) {
+                videoElement.play();
+            }
         }
     }
 
